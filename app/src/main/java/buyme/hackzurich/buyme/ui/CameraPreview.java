@@ -1,4 +1,4 @@
-package buyme.hackzurich.buyme;
+package buyme.hackzurich.buyme.ui;
 
 /**
  * Created by tatibloom on 16/09/2017.
@@ -14,6 +14,9 @@ import java.io.IOException;
 
 /** A basic Camera preview class */
 public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
+
+    private String TAG = CameraPreview.class.getSimpleName();
+
     private SurfaceHolder mHolder;
     private Camera mCamera;
 
