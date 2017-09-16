@@ -1,8 +1,11 @@
 package buyme.hackzurich.buyme.activity;
 
+import android.content.Intent;
 import android.hardware.Camera;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -37,8 +40,6 @@ public class CameraActivity extends AppCompatActivity {
         FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
         preview.addView(mPreview);
 
-        System.out.println("adding button");
-
         // Add a listener to the Capture button
         findViewById(R.id.button_capture).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -65,6 +66,13 @@ public class CameraActivity extends AppCompatActivity {
                 FileOutputStream fos = new FileOutputStream(pictureFile);
                 fos.write(data);
                 fos.close();
+
+                Log.d(TAG, "Start Preview Activity");
+                Intent cameraIntent = new Intent(getApplicationContext(), PhotoPreviewActivity.class);
+                    cameraIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    cameraIntent.putExtra("image", "file:" + pictureFile.getAbsolutePath());
+                    startActivity(cameraIntent);
+
             } catch (FileNotFoundException e) {
                 Log.d(TAG, "File not found: " + e.getMessage());
             } catch (IOException e) {

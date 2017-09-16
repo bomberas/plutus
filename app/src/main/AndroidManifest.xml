@@ -15,8 +15,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name="buyme.hackzurich.com.hackzurich.buyme.activity.HomeActivity"
-            android:label="@string/title_activity_main"
+            android:name=".activity.HomeActivity"
+            android:label="@string/title_activity_home"
             android:screenOrientation="sensorPortrait"
             android:theme="@style/AppFullScreenTheme">
             <intent-filter>
@@ -26,12 +26,18 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="buyme.hackzurich.com.hackzurich.buyme.activity.CameraActivity"
-            android:label="@string/title_activity_home"
+            android:name=".activity.CameraActivity"
+            android:label="@string/title_activity_main"
             android:screenOrientation="sensorPortrait"
-            android:theme="@style/AppFullScreenTheme">
-
-        </activity>
+            android:theme="@style/AppFullScreenTheme" />
+        <activity
+            android:name=".activity.PhotoPreviewActivity"
+            android:label="@string/title_activity_image_preview"
+            android:screenOrientation="sensorPortrait"
+            android:theme="@style/AppFullScreenTheme" />
+        <activity android:name=".activity.UploadPhotoActivity"
+            android:screenOrientation="sensorPortrait"
+            android:theme="@style/AppFullScreenTheme" />
     </application>
 
 </manifest>
