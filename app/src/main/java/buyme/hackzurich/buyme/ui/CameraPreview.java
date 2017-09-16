@@ -10,7 +10,9 @@ import android.hardware.Camera.Size;
 import java.io.IOException;
 import java.util.List;
 
-public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback, Camera.PreviewCallback {
+public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
+        //, Camera.PreviewCallback
+        {
 
     public static String TAG = CameraPreview.class.getSimpleName();
 
@@ -73,7 +75,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             mCamera.setDisplayOrientation(90);
 
             mCamera.setPreviewDisplay(mHolder);
-            mCamera.setPreviewCallback(this);
+            //mCamera.setPreviewCallback(this);
             mCamera.startPreview();
 
         } catch (Exception e){
@@ -81,14 +83,14 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         }
     }
 
-    /***
-     * Called by OS as preview frames are displayed (this callback is set by requestCalibration)
-     * When requested here comes the Camera Frame.
-     */
-    @Override
-    public void onPreviewFrame(final byte[] data, final Camera camera) {
-        Log.d(TAG, "bla bla");
-    }
+//    /***
+//     * Called by OS as preview frames are displayed (this callback is set by requestCalibration)
+//     * When requested here comes the Camera Frame.
+//     */
+//    @Override
+//    public void onPreviewFrame(final byte[] data, final Camera camera) {
+//        Log.d(TAG, "bla bla");
+//    }
 
     private Size getOptimalPreviewSize(List<Size> sizes, int w, int h) {
         final double ASPECT_TOLERANCE = 0.05;
