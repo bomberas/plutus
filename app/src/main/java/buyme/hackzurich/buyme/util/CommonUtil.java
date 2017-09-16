@@ -1,8 +1,11 @@
 package buyme.hackzurich.buyme.util;
 
 import android.content.Context;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -97,5 +100,12 @@ public class CommonUtil {
         myToast.setDuration(duration);
         myToast.setGravity(Gravity.CENTER , 0, 400);
         myToast.show();
+    }
+
+    public static void setColor(ImageView v, int val){
+        ColorMatrix matrix = new ColorMatrix();
+        matrix.setSaturation(val);
+        ColorMatrixColorFilter filter = new ColorMatrixColorFilter(matrix);
+        v.setColorFilter(filter);
     }
 }
