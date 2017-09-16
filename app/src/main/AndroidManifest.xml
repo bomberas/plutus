@@ -15,7 +15,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".activity.HomeActivity"
+            android:name="buyme.hackzurich.com.hackzurich.buyme.activity.HomeActivity"
             android:label="@string/title_activity_main"
             android:screenOrientation="sensorPortrait"
             android:theme="@style/AppFullScreenTheme">
@@ -26,7 +26,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activity.CameraActivity"
+            android:name="buyme.hackzurich.com.hackzurich.buyme.activity.CameraActivity"
             android:label="@string/title_activity_home"
             android:screenOrientation="sensorPortrait"
             android:theme="@style/AppFullScreenTheme">

@@ -28,16 +28,6 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
-        findViewById(R.id.btn_upload).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.i(TAG, "Starting Characters Activity");
-                Intent intent = new Intent(getApplicationContext(), CameraActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                finish();
-                startActivity(intent);
-            }
-        });
     }
 
 }

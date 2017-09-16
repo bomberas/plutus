@@ -1,14 +1,11 @@
 package buyme.hackzurich.buyme.activity;
 
-import android.content.pm.ActivityInfo;
 import android.hardware.Camera;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.FrameLayout;
 
 import java.io.File;
@@ -86,11 +83,6 @@ public class CameraActivity extends AppCompatActivity {
             Log.e(TAG, e.getLocalizedMessage());
         }
         return c;
-    }
-
-    /** Create a file Uri for saving an image or video */
-    private static Uri getOutputMediaFileUri(int type){
-        return Uri.fromFile(getOutputMediaFile());
     }
 
     /** Create a File for saving an image or video */

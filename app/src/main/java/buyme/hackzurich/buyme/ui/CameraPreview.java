@@ -1,11 +1,8 @@
 package buyme.hackzurich.buyme.ui;
 
-import android.app.Activity;
-import android.app.Application;
 import android.content.Context;
 import android.hardware.Camera;
 import android.util.Log;
-import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.hardware.Camera.Size;
@@ -73,6 +70,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             }
 
             mCamera.setParameters(parameters);
+            mCamera.setDisplayOrientation(90);
 
             mCamera.setPreviewDisplay(mHolder);
             mCamera.setPreviewCallback(this);
