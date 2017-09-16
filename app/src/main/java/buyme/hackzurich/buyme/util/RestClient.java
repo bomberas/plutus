@@ -4,118 +4,99 @@ package buyme.hackzurich.buyme.util;
  * Created by cecibloom on 16/09/2017.
  */
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.protocol.HTTP;
-import org.apache.http.util.EntityUtils;
-import org.json.JSONException;
-import org.json.JSONObject;
+import android.content.Context;
+import android.util.Log;
+import com.android.volley.AuthFailureError;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import java.util.HashMap;
+import java.util.Map;
 
 public class RestClient {
 
-
-    JSONObject data = new JSONObject();
-    String url;
-    String headerName;
-    String headerValue;
-
-    public RestClient(String s) {
-
-        url = s;
+    public static void getImageAttributes(byte[] image, String url, Context ctx){
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("url", url);
+        params.put("image", "");
+        call(Constant.FASHWELL_ATTR, params, ctx);
     }
 
-
-    public void addHeader(String name, String value) {
-
-        headerName = name;
-        headerValue = value;
-
+    public static void getProductsInStores(byte[] image, String url, String shop, int min, int max, int limit, Context ctx){
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("url", url);
+        params.put("image", "");
+        params.put("shop_name", shop);
+        if (min > 0) params.put("min_price", String.valueOf(min));
+        if (max > 0) params.put("max_price", String.valueOf(max));
+        if (limit > 0) params.put("max_products_per_detection", String.valueOf(limit));
+        call(Constant.FASHWELL_POSTS, params, ctx);
     }
 
-    public void addParam(String key, String value) {
-
-        try {
-            data.put(key, value);
-        } catch (JSONException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
-
+    public static void getProductBySKU(String sku, Context ctx){
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("sku", sku);
+        call(Constant.FASHWELL_SKU + sku + "/", params, ctx);
     }
 
-    public String executePost() {  // If you want to use post method to hit server
-
-        HttpClient httpClient = new DefaultHttpClient();
-        HttpPost httpPost = new HttpPost(url);
-        httpPost.setHeader(headerName, headerValue);
-        HttpResponse response = null;
-        String result = null;
-        try {
-            StringEntity entity = new StringEntity(data.toString(), HTTP.UTF_8);
-            httpPost.setEntity(entity);
-            response = httpClient.execute(httpPost);
-            HttpEntity entity1 = response.getEntity();
-            result = EntityUtils.toString(entity1);
-            return result;
-            //Toast.makeText(MainPage.this, result, Toast.LENGTH_LONG).show();
-        } catch (UnsupportedEncodingException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (ClientProtocolException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return result;
-
-
+    public static void getSimilarProductsBySKU(String sku, String shop, String min, String max, Context ctx){
+        String query = sku + "/?shop_name=" + shop + "&min_price=" + min + "&max_price=" + max;
+        call(Constant.FASHWELL_SKU + query, null, ctx);
     }
 
-    public String executeGet() { //If you want to use get method to hit server
-
-        HttpClient httpClient = new DefaultHttpClient();
-        HttpGet httpget = new HttpGet(url);
-        String result = null;
-        ResponseHandler<String> responseHandler = new BasicResponseHandler();
-        try {
-            result = httpClient.execute(httpget, responseHandler);
-        } catch (ClientProtocolException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
-        return result;
+    public static void getProductByEAN(String ean, Context ctx){
+        call(Constant.SIROOP_EAN + ean + "/?apikey=" + Constant.SIROOP_TOKEN, null, ctx);
     }
 
-    public static void main(String[] args) {
-        System.out.println("Hello World!"); // Display the string.
-        RestClient client = new RestClient("https://jsonplaceholder.typicode.com");  //Write your url here
+    public static void getProductBySKUinSiroop(String sku, Context ctx){
+        call(Constant.SIROOP_SKU + sku + "?apikey=" + Constant.SIROOP_TOKEN, null, ctx);
+    }
 
-        client.addHeader("content-type", "application/json"); // Here I am specifying that the key-value pairs are sent in the JSON format
+    public static void searchInSiroop(String query, String limit, String category, Context ctx){
+        call(Constant.SIROOP_SEARCH + "/?query" + query + "&limit=" + limit + "&category=" + category + "&apikey=" + Constant.SIROOP_TOKEN, null, ctx);
+    }
 
-        try {
-            String response = client.executePost(); // In case your server sends any response back, it will be saved in this response string.
-            System.out.printf("response" + response);
+    public static void recommend(String sku,Context ctx){
+        call(Constant.SIROOP_RECOMMEND + "?abstract_sku" + sku + "&locale=de_ch&apikey=" + Constant.SIROOP_TOKEN, null, ctx);
+    }
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    private static void call(String endpoint, final Map<String,String> parameters, Context ctx){
+
+        RequestQueue queue = Volley.newRequestQueue(ctx);
+        int op = (endpoint == Constant.FASHWELL_ATTR || endpoint == Constant.FASHWELL_POSTS) ? 1 : 0;
+        final boolean isFashWell = endpoint.contains("/www.fashwell.com");
+        StringRequest sr = new StringRequest(op,endpoint,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d("Response", response);
+                    }},
+                new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                Log.d("ERROR","error => "+error.toString());
+                            }
+                        })
+            {
+            @Override
+            protected Map<String,String> getParams(){
+                return parameters;
+            }
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String,String> params = new HashMap<String, String>();
+                if (isFashWell) {
+                    params.put("Authorization",Constant.FASHWELL_TOKEN);
+                } else {
+                    params.put("Authorization",Constant.SIROOP_TOKEN);
+                }
+                return params;
+            }
+        };
+        queue.add(sr);
     }
 
 }
