@@ -40,9 +40,6 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
-
-        RestClient.getProductsInStores(null, "https://4.bp.blogspot.com/-hH-RzRv_5SU/WBiXkuofvvI/AAAAAAAAIAI/sDERp1wIzG0XNEGInAQr83o9970WVxX0wCLcB/s1600/01d11eb823d638967dcf11198521549f.jpg",null,0,0,0,this);
-
     }
 
 }

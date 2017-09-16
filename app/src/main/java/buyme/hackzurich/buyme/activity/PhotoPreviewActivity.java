@@ -24,7 +24,6 @@ public class PhotoPreviewActivity extends AppCompatActivity {
             Bitmap mImageBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), Uri.parse(pictureFile));
             photoPreview.setImageBitmap(mImageBitmap);
             photoPreview.setRotation(90);
-            photoPreview.setAdjustViewBounds(true);
         } catch (IOException e) {
             e.printStackTrace();
         }

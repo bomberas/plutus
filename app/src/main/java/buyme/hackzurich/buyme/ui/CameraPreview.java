@@ -1,8 +1,10 @@
 package buyme.hackzurich.buyme.ui;
 
+import android.app.Activity;
 import android.content.Context;
 import android.hardware.Camera;
 import android.util.Log;
+import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.hardware.Camera.Size;
@@ -34,6 +36,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     public void surfaceCreated(SurfaceHolder holder) {
         // The Surface has been created, now tell the camera where to draw the preview.
         try {
+            mCamera.setDisplayOrientation(90);
             mCamera.setPreviewDisplay(holder);
             mCamera.startPreview();
         } catch (IOException e) {
@@ -62,18 +65,6 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         }
 
         try {
-            Camera.Parameters parameters = mCamera.getParameters();
-            List<Size> sizes = parameters.getSupportedPreviewSizes();
-            Size optimalSize = getOptimalPreviewSize(sizes, w, h);
-            parameters.setPreviewSize(optimalSize.width, optimalSize.height);
-
-            if ( context.getPackageManager().hasSystemFeature("android.hardware.camera.autofocus") ) {
-                parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
-            }
-
-            mCamera.setParameters(parameters);
-            mCamera.setDisplayOrientation(90);
-
             mCamera.setPreviewDisplay(mHolder);
             //mCamera.setPreviewCallback(this);
             mCamera.startPreview();
@@ -122,4 +113,5 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         }
         return optimalSize;
     }
+
 }

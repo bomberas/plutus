@@ -25,6 +25,9 @@ public class UploadPhotoActivity extends AppCompatActivity {
     public static String TAG = UploadPhotoActivity.class.getSimpleName();
     private HashMap<String, HashMap<String,Object>> items = new HashMap<>();
 
+    private Bitmap bitmap;
+    private ImageView imageView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,48 +51,38 @@ public class UploadPhotoActivity extends AppCompatActivity {
         if (requestCode == 1 && resultCode == RESULT_OK && data != null && data.getData() != null) {
             Uri uri = data.getData();
             try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-                ImageView imageView = (ImageView) findViewById(R.id.photo_selected);
+                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+                imageView = (ImageView) findViewById(R.id.photo_selected);
                 imageView.setImageBitmap(bitmap);
                 imageView.setRotation(90);
-                createSubViews(bitmap, imageView);
+                setViews();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
 
-    private void createSubViews(Bitmap bitmap, ImageView imageView) {
+    public void setViews() {
         RelativeLayout layout = (RelativeLayout) findViewById(R.id.rlUploadPhoto);
         int height = bitmap.getWidth();
         int width = bitmap.getHeight();
-        int initialX = imageView.getLeft();
-        int initialY = imageView.getTop();
 
-        Log.i(TAG, "initialX  = " + width);
-        Log.i(TAG, "initialY  = " + height);
+        Log.d(TAG, "height " + height);
+        Log.d(TAG, "width " + width);
+        Log.d(TAG, "height " + imageView.getHeight());
+        Log.d(TAG, "height " + imageView.getMeasuredHeight());
+        Log.d(TAG, "width " + imageView.getWidth());
+        Log.d(TAG, "width " + imageView.getMeasuredWidth());
 
         for ( HashMap<String, Object> item : this.items.values() ) {
-            int _left = initialX + (int)(Double.parseDouble(String.valueOf(item.get("x"))) * width);
-            int _top = initialY + (int)(Double.parseDouble(String.valueOf(item.get("y"))) * height);
+            int _left = (int)(Double.parseDouble(String.valueOf(item.get("x"))) * width);
+            int _top = (int)(Double.parseDouble(String.valueOf(item.get("y"))) * height);
 
             ImageView priceTag = new ImageView(this);
             priceTag.setImageResource(R.drawable.pricetag);
             priceTag.setX(_left);
             priceTag.setY(_top);
             layout.addView(priceTag);
-
-            Display display = getWindowManager().getDefaultDisplay();
-            String displayName = display.getName();  // minSdkVersion=17+
-            Log.i(TAG, "displayName  = " + displayName);
-
-// display size in pixels
-            Point size = new Point();
-            display.getSize(size);
-            int width1 = size.x;
-            int height1 = size.y;
-            Log.d(TAG, "width        = " + width1);
-            Log.d(TAG, "height       = " + height1);
 
             TextView price = new TextView(this);
             price.setText(String.valueOf(item.get("price")));
