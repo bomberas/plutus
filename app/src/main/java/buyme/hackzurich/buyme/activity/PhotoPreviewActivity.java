@@ -1,5 +1,6 @@
 package buyme.hackzurich.buyme.activity;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Point;
@@ -44,6 +45,16 @@ public class PhotoPreviewActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent intent = new Intent(this, CameraActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        finish();
+        startActivity(intent);
+    }
+
 
     private void createSubViews(Bitmap bitmap, ImageView imageView) {
         RelativeLayout layout = (RelativeLayout) findViewById(R.id.rlPreviewPhoto);

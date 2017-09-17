@@ -12,9 +12,7 @@ import android.hardware.Camera.Size;
 import java.io.IOException;
 import java.util.List;
 
-public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
-        //, Camera.PreviewCallback
-        {
+public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback  {
 
     public static String TAG = CameraPreview.class.getSimpleName();
 

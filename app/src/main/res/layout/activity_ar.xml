@@ -4,17 +4,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    android:id="@+id/rlUploadPhoto"
-    tools:context=".activity.UploadPhotoActivity" >
+    tools:context=".activity.ARActivity" >
 
-    <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scaleType="centerInside"
-            android:id="@+id/photo_selected"/>
+    <FrameLayout
+        android:id="@+id/camera_preview_ar"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1">
+
+    </FrameLayout>
 
     <RelativeLayout
-        android:id="@+id/loadingPanelUploadPhoto"
+        android:id="@+id/loadingPanelAR"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center" >
@@ -23,6 +24,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:indeterminate="true" />
+
     </RelativeLayout>
 
 </RelativeLayout>

@@ -2,9 +2,10 @@ package buyme.hackzurich.buyme.activity;
 
 import android.content.Intent;
 import android.hardware.Camera;
-import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -42,49 +43,30 @@ import buyme.hackzurich.buyme.ui.CameraPreview;
 import buyme.hackzurich.buyme.util.CommonUtil;
 import buyme.hackzurich.buyme.util.Constant;
 
-public class CameraActivity extends AppCompatActivity {
+public class ARActivity extends AppCompatActivity implements Camera.PreviewCallback {
 
-    public static String TAG = CameraActivity.class.getSimpleName();
-    private Camera mCamera;
+    public static String TAG = ARActivity.class.getSimpleName();
     private CameraPreview mPreview;
-    private boolean isButtonAvailable;
-    private ImageView button;
+    private Camera mCamera;
+
+    private List<Product> products = new ArrayList<>();
+
+    private boolean isInProgress = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_ar);
 
         // Create an instance of Camera
         mCamera = getCameraInstance();
 
         // Create our Preview view and set it as the content of our activity.
         mPreview = new CameraPreview(this, mCamera);
-        FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
+        FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview_ar);
         preview.addView(mPreview);
 
-        isButtonAvailable = true;
-        System.out.println("adding button");
-
-        // Add a listener to the Capture button
-        button = (ImageView) findViewById(R.id.button_capture);
-        findViewById(R.id.loadingPanel).setVisibility(View.GONE);
-
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                        // get an image from the camera
-
-                        if (isButtonAvailable) {
-                            CommonUtil.setColor(button, 0);
-                            findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
-                            mCamera.takePicture(null, null, mPicture);
-                            isButtonAvailable = false;
-                            Log.d(TAG, "TAKING PICTURE");
-                        }
-                    }
-                }
-        );
+        findViewById(R.id.loadingPanelAR).setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -147,7 +129,7 @@ public class CameraActivity extends AppCompatActivity {
         // Create a media file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         File mediaFile = new File(mediaStorageDir.getPath() + File.separator +
-                    "IMG_"+ timeStamp + ".jpg");
+                "IMG_"+ timeStamp + ".jpg");
 
         return mediaFile;
     }
@@ -174,7 +156,6 @@ public class CameraActivity extends AppCompatActivity {
             public void onResponse(String response) {
                 try {
                     JSONObject result = null;
-                    List<Product> products = new ArrayList<Product>();
                     result = new JSONObject(response);
                     JSONArray items = result.getJSONArray("products");
 
@@ -205,20 +186,12 @@ public class CameraActivity extends AppCompatActivity {
                             products.add(product);
                             Log.d(TAG, product.toString());
                         }
-
-                        Log.d(TAG, "Starting Preview Activity");
-                        Intent cameraIntent = new Intent(getApplicationContext(), PhotoPreviewActivity.class);
-                        cameraIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        cameraIntent.putExtra("products", (ArrayList<Product>)products);
-                        cameraIntent.putExtra("image", "file:" + file.getAbsolutePath());
-                        startActivity(cameraIntent);
+                        isInProgress = false;
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                isButtonAvailable = true;
-                findViewById(R.id.loadingPanel).setVisibility(View.GONE);
-                CommonUtil.setColor(button, 1);
+                findViewById(R.id.loadingPanelAR).setVisibility(View.GONE);
             }
         }, new Response.ErrorListener() {
             @Override
@@ -246,5 +219,13 @@ public class CameraActivity extends AppCompatActivity {
         RetryPolicy policy = new DefaultRetryPolicy(socketTimeout, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
         multiPartRequest.setRetryPolicy(policy);
         mSingleQueue.add(multiPartRequest);
+    }
+
+    @Override
+    public void onPreviewFrame(byte[] bytes, Camera camera) {
+        if ( !isInProgress ) {
+            camera.takePicture(null, null, mPicture);
+            isInProgress = true;
+        }
     }
 }
