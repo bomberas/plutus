@@ -1,5 +1,6 @@
 package buyme.hackzurich.buyme.activity;
 
+import android.content.Intent;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Environment;
@@ -18,18 +19,25 @@ import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import buyme.hackzurich.buyme.R;
 import buyme.hackzurich.buyme.domain.MultiPartStack;
 import buyme.hackzurich.buyme.domain.MultiPartStringRequest;
+import buyme.hackzurich.buyme.domain.Product;
 import buyme.hackzurich.buyme.ui.CameraPreview;
 import buyme.hackzurich.buyme.util.CommonUtil;
 import buyme.hackzurich.buyme.util.Constant;
@@ -155,6 +163,50 @@ public class CameraActivity extends AppCompatActivity {
             @Override
             public void onResponse(String response) {
                 Log.d("Response", response);
+
+                try {
+                    JSONObject result = null;
+                    List<Product> products = new ArrayList<Product>();
+                    result = new JSONObject(response);
+                    JSONArray items = result.getJSONArray("products");
+
+                    if (items != null && items.length() > 0) {
+                        for (int i = 0; i < items.length(); i++) {
+                            JSONObject item = (JSONObject) items.get(i);
+                            JSONObject bounding_box = (JSONObject) item.getJSONObject("bounding_box");
+                            JSONArray instances = item.getJSONArray("instances");
+
+                            Product product = new Product();
+                            product.setCategory(item.getString("category"));
+                            product.setX(bounding_box.getString("x"));
+                            product.setY(bounding_box.getString("y"));
+                            product.setHeight(bounding_box.getString("height"));
+                            product.setWidth(bounding_box.getString("width"));
+
+                            if (instances != null && instances.length() > 0) {
+                                JSONObject temp = (JSONObject) instances.get(0);
+                                product.setSku(temp.getString("sku"));
+                                product.setTitle(temp.getString("title"));
+                                product.setPrice(temp.getString("price"));
+                                product.setBrand_name(temp.getString("brand_name"));
+                                product.setShop_name(temp.getString("shop_name"));
+                                product.setProduct_url(temp.getString("product_url"));
+                                product.setImage_id(temp.getString("image_id"));
+                                product.setImg_url(temp.getString("img_url"));
+                            }
+                            products.add(product);
+                        }
+
+                        Log.d(TAG, "Starting Preview Activity");
+                        Intent cameraIntent = new Intent(getApplicationContext(), PhotoPreviewActivity.class);
+                        cameraIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        cameraIntent.putExtra("products", (ArrayList<Product>)products);
+                        cameraIntent.putExtra("image", "file:" + file.getAbsolutePath());
+                        startActivity(cameraIntent);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 isButtonAvailable = true;
                 findViewById(R.id.loadingPanel).setVisibility(View.GONE);
                 CommonUtil.setColor(button, 1);
