@@ -7,9 +7,14 @@
     android:id="@+id/rlUploadPhoto"
     tools:context=".activity.UploadPhotoActivity" >
 
-    <ImageView
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:id="@+id/photo_selected"/>
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerInside"
+            android:id="@+id/photo_selected"/>
+    </LinearLayout>
 
 </RelativeLayout>
