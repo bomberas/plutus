@@ -1,16 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fillViewport="true"
-    android:id="@+id/rlPreviewPhoto"
-    tools:context=".activity.PhotoPreviewActivity" >
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@android:color/white"
+    android:layout_gravity="center"
+    android:id="@+id/rlPreviewPhoto">
 
     <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="centerInside"
-        android:id="@+id/photo_preview"/>
+        android:adjustViewBounds="true"
+        android:id="@+id/photo_preview"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:src="@android:color/white"
+        android:layout_margin="5dp"
+        android:scaleType="centerInside"/>
 
 </RelativeLayout>

@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Display;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -24,7 +25,7 @@ import buyme.hackzurich.buyme.domain.Product;
 
 public class PhotoPreviewActivity extends AppCompatActivity {
 
-    private static String TAG = UploadPhotoActivity.class.getSimpleName();
+    private static String TAG = PhotoPreviewActivity.class.getSimpleName();
     private  List<Product> products;
 
     @Override

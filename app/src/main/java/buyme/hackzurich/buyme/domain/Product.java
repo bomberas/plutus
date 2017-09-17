@@ -158,4 +158,24 @@ public class Product implements  Serializable{
     public void setHeight(String height) {
         this.height = height;
     }
+
+    @Override
+    public String toString() {
+        return "Product{" +
+                "category='" + category + '\'' +
+                ", sku='" + sku + '\'' +
+                ", title='" + title + '\'' +
+                ", price='" + price + '\'' +
+                ", brand_name='" + brand_name + '\'' +
+                ", shop_name='" + shop_name + '\'' +
+                ", product_url='" + product_url + '\'' +
+                ", image_id='" + image_id + '\'' +
+                ", img_url='" + img_url + '\'' +
+                ", msrp='" + msrp + '\'' +
+                ", x='" + x + '\'' +
+                ", y='" + y + '\'' +
+                ", width='" + width + '\'' +
+                ", height='" + height + '\'' +
+                '}';
+    }
 }

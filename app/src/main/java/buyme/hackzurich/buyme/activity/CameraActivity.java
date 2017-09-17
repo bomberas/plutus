@@ -179,7 +179,6 @@ public class CameraActivity extends AppCompatActivity {
                 Request.Method.POST, "http://www.fashwell.com/api/hackzurich/v1/posts/", new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                Log.d("Response", response);
 
                 try {
                     JSONObject result = null;
@@ -212,6 +211,7 @@ public class CameraActivity extends AppCompatActivity {
                                 product.setImg_url(temp.getString("img_url"));
                             }
                             products.add(product);
+                            Log.d(TAG, product.toString());
                         }
 
                         Log.d(TAG, "Starting Preview Activity");
@@ -221,7 +221,7 @@ public class CameraActivity extends AppCompatActivity {
                         cameraIntent.putExtra("image", "file:" + file.getAbsolutePath());
                         startActivity(cameraIntent);
                     } else {
-                        CommonUtil.showToastMessage(ctx,vie_toast,txt_toast,"Intenta nuevamesnte", Toast.LENGTH_SHORT);
+                        CommonUtil.showToastMessage(ctx,vie_toast,txt_toast,"C'mon, take a better picture!", Toast.LENGTH_SHORT);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
