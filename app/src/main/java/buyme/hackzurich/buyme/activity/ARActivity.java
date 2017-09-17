@@ -1,20 +1,24 @@
 package buyme.hackzurich.buyme.activity;
 
-import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.Point;
+import android.graphics.Typeface;
 import android.hardware.Camera;
-import android.media.MediaActionSound;
-import android.os.Bundle;
+import android.net.Uri;
 import android.os.Environment;
+import android.os.Handler;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
+import android.view.Display;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
@@ -46,64 +50,36 @@ import buyme.hackzurich.buyme.domain.MultiPartStack;
 import buyme.hackzurich.buyme.domain.MultiPartStringRequest;
 import buyme.hackzurich.buyme.domain.Product;
 import buyme.hackzurich.buyme.ui.CameraPreview;
-import buyme.hackzurich.buyme.util.CommonUtil;
 import buyme.hackzurich.buyme.util.Constant;
 
-public class CameraActivity extends AppCompatActivity {
+public class ARActivity extends AppCompatActivity  implements Camera.PreviewCallback {
 
-    public static String TAG = CameraActivity.class.getSimpleName();
-    private Camera mCamera;
+    public static String TAG = ARActivity.class.getSimpleName();
     private CameraPreview mPreview;
-    private boolean isButtonAvailable;
-    private ImageView button;
-    private View vie_toast;
-    private TextView txt_toast;
-    private Context ctx;
+    private Camera mCamera;
+
+    private List<Product> products = new ArrayList<>();
+    private Uri uri;
+    private boolean isInProgress = false;
+
+    private Bitmap bitmap;
+    private ImageView imageView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_ar);
 
         // Create an instance of Camera
         mCamera = getCameraInstance();
 
         // Create our Preview view and set it as the content of our activity.
         mPreview = new CameraPreview(this, mCamera);
-        mPreview.isAR = false;
-        FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
+        mPreview.isAR = true;
+        FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview_ar);
         preview.addView(mPreview);
 
-        isButtonAvailable = true;
-        System.out.println("adding button");
-
-        // Setting values for all toast messages that will be shown in this class.
-        ctx = this;
-        LayoutInflater inflater = LayoutInflater.from(this);
-        vie_toast = inflater.inflate(R.layout.custom_toast, (ViewGroup) findViewById(R.id.customToast));
-        txt_toast = (TextView) vie_toast.findViewById(R.id.txt_toast);
-
-        // Add a listener to the Capture button
-        button = (ImageView) findViewById(R.id.button_capture);
-        findViewById(R.id.loadingPanel).setVisibility(View.GONE);
-
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                        // get an image from the camera
-
-                        if (isButtonAvailable) {
-                            MediaActionSound sound = new MediaActionSound();
-                            sound.play(MediaActionSound.SHUTTER_CLICK);
-                            CommonUtil.setColor(button, 0);
-                            findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
-                            mCamera.takePicture(null, null, mPicture);
-                            isButtonAvailable = false;
-                            Log.d(TAG, "TAKING PICTURE");
-                        }
-                    }
-                }
-        );
+        findViewById(R.id.loadingPanelAR).setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -115,28 +91,50 @@ public class CameraActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private Camera.PictureCallback mPicture = new Camera.PictureCallback() {
+    private void createSubViews(Bitmap bitmap, ImageView imageView) {
+        RelativeLayout layout = (RelativeLayout) findViewById(R.id.rlUploadPhoto);
+        int height = bitmap.getWidth();
+        int width = bitmap.getHeight();
+        int initialX = imageView.getLeft();
+        int initialY = imageView.getTop();
 
-        @Override
-        public void onPictureTaken(byte[] data, Camera camera) {
-            File pictureFile = getOutputMediaFile();
-            if (pictureFile == null){
-                Log.d(TAG, "Error creating media file, check storage permissions: ");
-                return;
-            }
-            try {
-                Log.d(TAG, pictureFile.getAbsolutePath());
-                FileOutputStream fos = new FileOutputStream(pictureFile);
-                fos.write(data);
-                fos.close();
-                makeCall(pictureFile);
-            } catch (FileNotFoundException e) {
-                Log.d(TAG, "File not found: " + e.getMessage());
-            } catch (IOException e) {
-                Log.d(TAG, "Error accessing file: " + e.getMessage());
-            }
+        Log.i(TAG, "initialX  = " + width);
+        Log.i(TAG, "initialY  = " + height);
+
+        Log.d(TAG, "**************" + products.size());
+
+        for (Product product : products) {
+            int _left = (int) (Double.valueOf(product.getX()) * width);
+            int _top = (int) (Double.valueOf(product.getY()) * height);
+
+            ImageView priceTag = new ImageView(this);
+            priceTag.setImageResource(R.drawable.pricetag);
+            priceTag.setX(_left);
+            priceTag.setY(_top);
+            layout.addView(priceTag);
+
+            Display display = getWindowManager().getDefaultDisplay();
+            String displayName = display.getName();  // minSdkVersion=17+
+            Log.i(TAG, "displayName  = " + displayName);
+
+            // display size in pixels
+            Point size = new Point();
+            display.getSize(size);
+            int width1 = size.x;
+            int height1 = size.y;
+            Log.d(TAG, "width        = " + width1);
+            Log.d(TAG, "height       = " + height1);
+
+            TextView price = new TextView(this);
+            price.setText(product.getPrice());
+            price.setTextColor(Color.BLACK);
+            price.setTextSize(17);
+            price.setTypeface(Typeface.SANS_SERIF, Typeface.BOLD);
+            price.setX(_left + 70);
+            price.setY(_top - 25);
+            layout.addView(price);
         }
-    };
+    }
 
     /** A safe way to get an instance of the Camera object. */
     public static Camera getCameraInstance(){
@@ -166,7 +164,7 @@ public class CameraActivity extends AppCompatActivity {
         // Create a media file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         File mediaFile = new File(mediaStorageDir.getPath() + File.separator +
-                    "IMG_"+ timeStamp + ".jpg");
+                "IMG_"+ timeStamp + ".jpg");
 
         return mediaFile;
     }
@@ -193,7 +191,6 @@ public class CameraActivity extends AppCompatActivity {
             public void onResponse(String response) {
                 try {
                     JSONObject result = null;
-                    List<Product> products = new ArrayList<Product>();
                     result = new JSONObject(response);
                     JSONArray items = result.getJSONArray("products");
 
@@ -224,24 +221,24 @@ public class CameraActivity extends AppCompatActivity {
                             products.add(product);
                             Log.d(TAG, product.toString());
                         }
+                        //isInProgress = false;
+                        try {
+                            bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), Uri.fromFile(file));
+                            imageView = (ImageView) findViewById(R.id.photo_selected);
+                            imageView.setImageBitmap(bitmap);
+                            imageView.setRotation(90);
+                            createSubViews(bitmap, imageView);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
 
-                        Log.d(TAG, "Starting Preview Activity");
-                        Intent cameraIntent = new Intent(getApplicationContext(), PhotoPreviewActivity.class);
-                        cameraIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        cameraIntent.putExtra("products", (ArrayList<Product>)products);
-                        cameraIntent.putExtra("image", "file:" + file.getAbsolutePath());
-                        startActivity(cameraIntent);
-                    } else {
-                        CommonUtil.showToastMessage(ctx,vie_toast,txt_toast,"C'mon, take a better picture!", Toast.LENGTH_SHORT);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                 }
-                isButtonAvailable = true;
-                findViewById(R.id.loadingPanel).setVisibility(View.GONE);
-                CommonUtil.setColor(button, 1);
+                findViewById(R.id.loadingPanelAR).setVisibility(View.GONE);
             }
         }, new Response.ErrorListener() {
             @Override
@@ -270,4 +267,33 @@ public class CameraActivity extends AppCompatActivity {
         multiPartRequest.setRetryPolicy(policy);
         mSingleQueue.add(multiPartRequest);
     }
+
+
+    /***
+     * Called by OS as preview frames are displayed (this callback is set by requestCalibration)
+     * When requested here comes the Camera Frame.
+     */
+    @Override
+    public void onPreviewFrame(final byte[] data, final Camera camera) {
+        if ( !isInProgress ) {
+            isInProgress = true;
+            File pictureFile = getOutputMediaFile();
+            if (pictureFile == null){
+                Log.d(TAG, "Error creating media file, check storage permissions: ");
+                return;
+            }
+            try {
+                Log.d(TAG, pictureFile.getAbsolutePath());
+                FileOutputStream fos = new FileOutputStream(pictureFile);
+                fos.write(data);
+                fos.close();
+                makeCall(pictureFile);
+            } catch (FileNotFoundException e) {
+                Log.d(TAG, "File not found: " + e.getMessage());
+            } catch (IOException e) {
+                Log.d(TAG, "Error accessing file: " + e.getMessage());
+            }
+        }
+    }
+
 }

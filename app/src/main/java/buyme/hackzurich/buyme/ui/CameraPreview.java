@@ -12,15 +12,14 @@ import android.hardware.Camera.Size;
 import java.io.IOException;
 import java.util.List;
 
-public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
-        //, Camera.PreviewCallback
-        {
+public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback  {
 
     public static String TAG = CameraPreview.class.getSimpleName();
 
     private Context context;
     private SurfaceHolder mHolder;
     private Camera mCamera;
+    public boolean isAR = false;
 
     public CameraPreview(Context context, Camera camera) {
         super(context);
@@ -66,7 +65,9 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 
         try {
             mCamera.setPreviewDisplay(mHolder);
-            //mCamera.setPreviewCallback(this);
+           if ( isAR) {
+               mCamera.setPreviewCallback((Camera.PreviewCallback)context);
+           }
             mCamera.startPreview();
 
         } catch (Exception e){
