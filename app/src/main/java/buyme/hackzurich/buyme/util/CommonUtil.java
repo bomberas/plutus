@@ -98,7 +98,7 @@ public class CommonUtil {
         Toast myToast = new Toast(context);
         myToast.setView(view);
         myToast.setDuration(duration);
-        myToast.setGravity(Gravity.CENTER , 0, 400);
+        myToast.setGravity(Gravity.CENTER , 0, 0);
         myToast.show();
     }
 

@@ -1,14 +1,20 @@
 package buyme.hackzurich.buyme.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.hardware.Camera;
+import android.media.MediaActionSound;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
@@ -49,6 +55,9 @@ public class CameraActivity extends AppCompatActivity {
     private CameraPreview mPreview;
     private boolean isButtonAvailable;
     private ImageView button;
+    private View vie_toast;
+    private TextView txt_toast;
+    private Context ctx;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -66,6 +75,12 @@ public class CameraActivity extends AppCompatActivity {
         isButtonAvailable = true;
         System.out.println("adding button");
 
+        // Setting values for all toast messages that will be shown in this class.
+        ctx = this;
+        LayoutInflater inflater = LayoutInflater.from(this);
+        vie_toast = inflater.inflate(R.layout.custom_toast, (ViewGroup) findViewById(R.id.customToast));
+        txt_toast = (TextView) vie_toast.findViewById(R.id.txt_toast);
+
         // Add a listener to the Capture button
         button = (ImageView) findViewById(R.id.button_capture);
         findViewById(R.id.loadingPanel).setVisibility(View.GONE);
@@ -76,6 +91,8 @@ public class CameraActivity extends AppCompatActivity {
                         // get an image from the camera
 
                         if (isButtonAvailable) {
+                            MediaActionSound sound = new MediaActionSound();
+                            sound.play(MediaActionSound.SHUTTER_CLICK);
                             CommonUtil.setColor(button, 0);
                             findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
                             mCamera.takePicture(null, null, mPicture);
@@ -203,6 +220,8 @@ public class CameraActivity extends AppCompatActivity {
                         cameraIntent.putExtra("products", (ArrayList<Product>)products);
                         cameraIntent.putExtra("image", "file:" + file.getAbsolutePath());
                         startActivity(cameraIntent);
+                    } else {
+                        CommonUtil.showToastMessage(ctx,vie_toast,txt_toast,"Intenta nuevamesnte", Toast.LENGTH_SHORT);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
