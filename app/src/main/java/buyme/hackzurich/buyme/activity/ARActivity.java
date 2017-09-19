@@ -91,6 +91,13 @@ public class ARActivity extends AppCompatActivity  implements Camera.PreviewCall
         startActivity(intent);
     }
 
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+
+        isInProgress = true;
+    }
+
     private void createSubViews(Bitmap bitmap, ImageView imageView) {
         RelativeLayout layout = (RelativeLayout) findViewById(R.id.rlUploadPhoto);
         int height = bitmap.getWidth();
@@ -275,8 +282,11 @@ public class ARActivity extends AppCompatActivity  implements Camera.PreviewCall
      */
     @Override
     public void onPreviewFrame(final byte[] data, final Camera camera) {
-        if ( !isInProgress ) {
-            isInProgress = true;
+
+
+        if ( isInProgress ) {
+            Log.w(TAG, "entrando");
+            isInProgress = false;
             File pictureFile = getOutputMediaFile();
             if (pictureFile == null){
                 Log.d(TAG, "Error creating media file, check storage permissions: ");

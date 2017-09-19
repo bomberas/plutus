@@ -18,11 +18,11 @@
         android:scaleType="centerInside"/>
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:id="@+id/contextual"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:gravity="left">
+        android:gravity="bottom">
 
         <ImageView
             android:id="@+id/button_details"
@@ -32,6 +32,7 @@
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:layout_gravity="bottom"
+            android:layout_marginLeft="30dp"
             android:adjustViewBounds="false"/>
 
         <ImageView
@@ -42,6 +43,7 @@
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:layout_gravity="bottom"
+            android:layout_marginLeft="70dp"
             android:adjustViewBounds="false"/>
 
         <ImageView
@@ -52,6 +54,7 @@
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:layout_gravity="bottom"
+            android:layout_marginLeft="110dp"
             android:adjustViewBounds="false"/>
 
     </RelativeLayout>
